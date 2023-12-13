@@ -131,3 +131,4 @@ dist
 
 # Personal
 backend/package-lock.json
+.vscode/settings.json

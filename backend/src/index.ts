@@ -1,10 +1,11 @@
-import express from 'express';
+import app from "./app.js";
+import { connectToDB } from "./db/connection.js";
 
-const app = express();
-const port = 3000;
+const PORT = process.env.EXPRESS_PORT || 5000;
 
-// Middlewares
-app.use(express.json());
-
-// Listener
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+// Connect to MongoDB
+connectToDB()
+  .then(() => {
+    app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+  })
+  .catch((error) => console.log(error));

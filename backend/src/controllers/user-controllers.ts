@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/User.js";
-import { hash } from "bcrypt";
+import { compare, hash } from "bcrypt";
 
 export const getAllUsers = async (
   req: Request,
@@ -46,7 +46,12 @@ export const userLogin = async (
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    // res.status(201).json({ message: "OK", id: user._id.toString() });
+    if (!user) return res.status(403).json({ message: "User not registered" });
+
+    const isPasswordCorrect = await compare(password, user.password);
+    if (!isPasswordCorrect)
+      return res.status(403).json({ message: "Invalid credentials" });
+    res.status(201).json({ message: "OK", id: user._id.toString() });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "ERROR", cause: error.message });

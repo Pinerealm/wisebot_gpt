@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/User.js";
 import { compare, hash } from "bcrypt";
+import { generateToken } from "../utils/tokens-manager.js";
+import { COOKIE_NAME, COOKIE_OPTIONS } from "../utils/constants.js";
 
 export const getAllUsers = async (
   req: Request,
@@ -23,14 +25,26 @@ export const userSignup = async (
 ) => {
   try {
     const { name, email, password } = req.body;
-    const existingUser = User.findOne({ email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(403).json({ message: "User already exists" });
     }
+
     const hashedPassword = await hash(password, 10);
     const user = new User({ name, email, password: hashedPassword });
-
     await user.save();
+
+    // Clear cookie before setting it
+    res.clearCookie(COOKIE_NAME, {
+      path: "/",
+      ...COOKIE_OPTIONS,
+    });
+
+    const token = generateToken(user._id.toString(), user.email, "14d");
+    res.cookie(COOKIE_NAME, token, {
+      ...COOKIE_OPTIONS,
+      maxAge: 14 * 24 * 60 * 60 * 1000,
+    });
     res.status(201).json({ message: "OK", id: user._id.toString() });
   } catch (error) {
     console.log(error);
@@ -51,6 +65,19 @@ export const userLogin = async (
     const isPasswordCorrect = await compare(password, user.password);
     if (!isPasswordCorrect)
       return res.status(403).json({ message: "Invalid credentials" });
+
+    // Clear cookie before setting it
+    res.clearCookie(COOKIE_NAME, {
+      path: "/",
+      ...COOKIE_OPTIONS,
+    });
+
+    const token = generateToken(user._id.toString(), user.email, "14d");
+    res.cookie(COOKIE_NAME, token, {
+      ...COOKIE_OPTIONS,
+      maxAge: 14 * 24 * 60 * 60 * 1000,
+    });
+
     res.status(201).json({ message: "OK", id: user._id.toString() });
   } catch (error) {
     console.log(error);

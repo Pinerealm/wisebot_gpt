@@ -14,7 +14,7 @@ const Logo = () => {
       <Link to={"/"}>
         <img
           src="robot-icon.png"
-          alt="openai"
+          alt="robot-icon"
           width="35px"
           height="35px"
           className="image-inverted"

@@ -45,7 +45,7 @@ export const userSignup = async (
       ...COOKIE_OPTIONS,
       maxAge: 14 * 24 * 60 * 60 * 1000,
     });
-    res.status(201).json({ message: "OK", id: user._id.toString() });
+    res.status(201).json({ message: "OK", name: user.name, email: user.email });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "ERROR", cause: error.message });
@@ -63,8 +63,10 @@ export const userLogin = async (
     if (!user) return res.status(403).json({ message: "User not registered" });
 
     const isPasswordCorrect = await compare(password, user.password);
-    if (!isPasswordCorrect)
+    if (!isPasswordCorrect) {
+      console.log("Invalid credentials");
       return res.status(403).json({ message: "Invalid credentials" });
+    }
 
     // Clear cookie before setting it
     res.clearCookie(COOKIE_NAME, {
@@ -78,7 +80,7 @@ export const userLogin = async (
       maxAge: 14 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(201).json({ message: "OK", id: user._id.toString() });
+    res.status(200).json({ message: "OK", name: user.name, email: user.email });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "ERROR", cause: error.message });

@@ -35,3 +35,7 @@ export const signupValidator = [
     .withMessage("Name must be at least 3 characters long."),
   ...loginValidator,
 ];
+
+export const chatCompletionValidator = [
+  body("prompt").notEmpty().withMessage("A prompt message is required."),
+];

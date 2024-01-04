@@ -26,3 +26,12 @@ export const sendChatRequest = async (prompt: string) => {
   const data = await response.data;
   return data;
 };
+
+export const getUserChats = async () => {
+  const response = await axios.get('/chats/all-chats');
+  if (response.status !== 200) {
+    throw new Error('Unable to get stored chats');
+  }
+  const data = await response.data;
+  return data;
+};

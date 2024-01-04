@@ -1,87 +1,107 @@
-import { Avatar, Box, Button, IconButton, Typography } from "@mui/material";
-import { useAuth } from "../context/AuthContext";
-import { red } from "@mui/material/colors";
-import ChatItem from "../components/chat/ChatItem";
-import { IoMdSend } from "react-icons/io";
+import { Avatar, Box, Button, IconButton, Typography } from '@mui/material';
+import { useAuth } from '../context/AuthContext';
+import { red } from '@mui/material/colors';
+import ChatItem from '../components/chat/ChatItem';
 
-const chatMessages = [
-  {
-    role: "assistant",
-    content: "Hello! How can I assist you today?",
-  },
-  {
-    role: "user",
-    content: "Hi there! I need help with setting up my email.",
-  },
-  {
-    role: "assistant",
-    content:
-      "Sure, I'd be happy to help you with that. Could you let me know which email provider you're using?",
-  },
-  {
-    role: "user",
-    content: "I use Gmail.",
-  },
-  {
-    role: "assistant",
-    content:
-      "Great! To set up your email in a mail client, you'll need to use the following settings...",
-  },
-  {
-    role: "user",
-    content: "Thanks for the information!",
-  },
-  {
-    role: "assistant",
-    content:
-      "You're welcome! If you have any more questions, feel free to ask.",
-  },
-];
+import { IoMdSend } from 'react-icons/io';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { getUserChats, sendChatRequest } from '../helpers/api-communicator';
+import toast from 'react-hot-toast';
+
+type ChatMessage = {
+  role: 'user' | 'assistant';
+  content: string;
+};
 
 const Chat = () => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const auth = useAuth();
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+
+  const handleSubmit = async () => {
+    const prompt = inputRef.current?.value as string;
+    if (inputRef && inputRef.current) {
+      inputRef.current.value = '';
+    }
+    const newMessage: ChatMessage = { role: 'user', content: prompt };
+    setChatMessages((prevChats) => [...prevChats, newMessage]);
+    const chatResponse = await sendChatRequest(prompt);
+    setChatMessages([...chatResponse.chats]);
+  };
+
+  const handleEnterKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
+  const scrollToBottom = () => {
+    const chatBox = document.getElementById('chat-box');
+    if (chatBox) {
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages]);
+
+  useLayoutEffect(() => {
+    if (auth?.isLoggedIn && auth?.user) {
+      toast.loading('Loading chat...', { id: 'loadChats' });
+      getUserChats()
+        .then((data) => {
+          setChatMessages([...data.chats]);
+          toast.success('Chats loaded successfully!', { id: 'loadChats' });
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Couldn't load chats!", { id: 'loadChats' });
+        });
+    }
+  }, [auth]);
   return (
     <Box
       sx={{
-        display: "flex",
+        display: 'flex',
         flex: 1,
-        width: "100%",
-        height: "100%",
+        width: '100%',
+        height: '100%',
         mt: 3,
         gap: 3,
       }}
     >
       <Box
         sx={{
-          display: { md: "flex", xs: "none", sm: "none" },
+          display: { md: 'flex', xs: 'none', sm: 'none' },
           flex: 0.2,
-          flexDirection: "column",
+          flexDirection: 'column',
         }}
       >
         <Box
           sx={{
-            display: "flex",
-            width: "100%",
-            height: "60vh",
-            bgcolor: "rgb(17,29,39)",
+            display: 'flex',
+            width: '100%',
+            height: '60vh',
+            bgcolor: 'rgb(17,29,39)',
             borderRadius: 5,
-            flexDirection: "column",
+            flexDirection: 'column',
             mx: 3,
           }}
         >
           <Avatar
             sx={{
-              mx: "auto",
+              mx: 'auto',
               my: 2,
-              bgcolor: "white",
-              color: "black",
+              bgcolor: 'white',
+              color: 'black',
               fontWeight: 700,
             }}
           >
             {auth?.user?.name[0]}
-            {auth?.user?.name.split(" ")[1][0]}
+            {auth?.user?.name.split(' ')[1][0]}
           </Avatar>
-          <Typography sx={{ mx: "auto", fontFamily: "work sans", my: 4, p: 3 }}>
+          <Typography sx={{ mx: 'auto', fontFamily: 'work sans', my: 4, p: 3 }}>
             You are logged in as {auth?.user?.name}
             <br />
             Feel free to ask any question.
@@ -90,13 +110,13 @@ const Chat = () => {
           </Typography>
           <Button
             sx={{
-              width: "200px",
-              m: "auto",
-              color: "white",
+              width: '200px',
+              m: 'auto',
+              color: 'white',
               fontWeight: 700,
               borderRadius: 3,
               bgcolor: red[300],
-              ":hover": {
+              ':hover': {
                 bgcolor: red.A400,
               },
             }}
@@ -107,69 +127,75 @@ const Chat = () => {
       </Box>
       <Box
         sx={{
-          display: "flex",
+          display: 'flex',
           flex: { md: 0.8, xs: 1, sm: 1 },
-          flexDirection: "column",
+          flexDirection: 'column',
           px: 3,
         }}
       >
         <Typography
           sx={{
-            textAlign: "center",
-            fontSize: "40px",
+            textAlign: 'center',
+            fontSize: '35px',
             fontWeight: 600,
-            color: "white",
+            color: 'white',
             mb: 2,
-            mx: "auto",
+            mx: 'auto',
           }}
         >
           Model - GPT 3.5 Turbo
         </Typography>
         <Box
+          id="chat-box"
           sx={{
-            width: "100%",
-            height: "60vh",
+            width: '100%',
+            height: '60vh',
             borderRadius: 3,
-            mx: "auto",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "scroll",
-            overflowX: "hidden",
-            overflowY: "auto",
-            scrollBehavior: "smooth",
+            mx: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'scroll',
+            overflowX: 'hidden',
+            overflowY: 'auto',
+            scrollBehavior: 'smooth',
           }}
         >
           {chatMessages.map((chat, index) => (
             <ChatItem
               content={chat.content}
-              role={chat.role as "user" | "assistant"}
+              role={chat.role as 'user' | 'assistant'}
               key={index}
             />
           ))}
         </Box>
         <div
           style={{
-            width: "100%",
-            padding: "20px",
+            width: '100%',
+            padding: '20px',
             borderRadius: 8,
-            backgroundColor: "rgb(17,29,39)",
-            display: "flex",
-            margin: "auto",
+            backgroundColor: 'rgb(17,29,39)',
+            display: 'flex',
+            margin: 'auto',
           }}
         >
           <input
+            ref={inputRef}
+            onKeyDown={handleEnterKeyPress}
             type="text"
             style={{
-              width: "100%",
-              backgroundColor: "transparent",
-              padding: "10px",
-              border: "none",
-              outline: "none",
-              color: "white",
-              fontSize: "20px",
+              width: '100%',
+              backgroundColor: 'transparent',
+              padding: '10px',
+              border: 'none',
+              outline: 'none',
+              color: 'white',
+              fontSize: '20px',
             }}
           />
-          <IconButton sx={{ ml: "auto", color: "white" }}>
+          <IconButton
+            onClick={handleSubmit}
+            sx={{ ml: 'auto', color: 'white' }}
+          >
             <IoMdSend />
           </IconButton>
         </div>

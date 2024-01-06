@@ -35,3 +35,12 @@ export const getUserChats = async () => {
   const data = await response.data;
   return data;
 };
+
+export const deleteUserChats = async () => {
+  const response = await axios.delete('/chats/delete');
+  if (response.status !== 200) {
+    throw new Error('Unable to delete stored chats');
+  }
+  const data = await response.data;
+  return data;
+};

@@ -5,7 +5,11 @@ import ChatItem from '../components/chat/ChatItem';
 
 import { IoMdSend } from 'react-icons/io';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { getUserChats, sendChatRequest } from '../helpers/api-communicator';
+import {
+  deleteUserChats,
+  getUserChats,
+  sendChatRequest,
+} from '../helpers/api-communicator';
 import toast from 'react-hot-toast';
 
 type ChatMessage = {
@@ -39,6 +43,18 @@ const Chat = () => {
     const chatBox = document.getElementById('chat-box');
     if (chatBox) {
       chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  };
+
+  const handleDeleteChats = async () => {
+    try {
+      toast.loading('Deleting chats...', { id: 'deleteChats' });
+      await deleteUserChats();
+      setChatMessages([]);
+      toast.success('Chats deleted successfully!', { id: 'deleteChats' });
+    } catch (error) {
+      console.log(error);
+      toast.error("Couldn't delete chats!", { id: 'deleteChats' });
     }
   };
 
@@ -109,6 +125,7 @@ const Chat = () => {
             Avoid sharing personal information.
           </Typography>
           <Button
+            onClick={handleDeleteChats}
             sx={{
               width: '200px',
               m: 'auto',

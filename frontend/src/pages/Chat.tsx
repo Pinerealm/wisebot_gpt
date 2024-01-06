@@ -11,6 +11,7 @@ import {
   sendChatRequest,
 } from '../helpers/api-communicator';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 type ChatMessage = {
   role: 'user' | 'assistant';
@@ -18,6 +19,7 @@ type ChatMessage = {
 };
 
 const Chat = () => {
+  const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const auth = useAuth();
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -59,8 +61,10 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [chatMessages]);
+    if (!auth?.isLoggedIn) {
+      return navigate('/login');
+    }
+  }, [auth]);
 
   useLayoutEffect(() => {
     if (auth?.isLoggedIn && auth?.user) {
@@ -68,7 +72,12 @@ const Chat = () => {
       getUserChats()
         .then((data) => {
           setChatMessages([...data.chats]);
-          toast.success('Chats loaded successfully!', { id: 'loadChats' });
+          if (data.chats.length > 0) {
+            scrollToBottom();
+            toast.success('Chats loaded successfully!', { id: 'loadChats' });
+          } else {
+            toast.success('No chats found!', { id: 'loadChats' });
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -196,6 +205,7 @@ const Chat = () => {
           }}
         >
           <input
+            placeholder="Enter your prompt here..."
             ref={inputRef}
             onKeyDown={handleEnterKeyPress}
             type="text"

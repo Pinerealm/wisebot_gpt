@@ -44,3 +44,12 @@ export const deleteUserChats = async () => {
   const data = await response.data;
   return data;
 };
+
+export const logoutUser = async () => {
+  const response = await axios.get('/users/logout');
+  if (response.status !== 200) {
+    throw new Error('Unable to delete stored chats');
+  }
+  const data = await response.data;
+  return data;
+};

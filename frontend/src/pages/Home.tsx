@@ -1,5 +1,6 @@
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import TypingAnimation from '../components/shared/TypingAnimation';
+import Footer from '../components/shared/Footer';
 
 const Home = () => {
   const theme = useTheme();
@@ -62,6 +63,7 @@ const Home = () => {
           />
         </Box>
       </Box>
+      <Footer />
     </Box>
   );
 };

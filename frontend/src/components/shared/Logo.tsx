@@ -15,8 +15,8 @@ const Logo = () => {
         <img
           src="robot-icon.png"
           alt="robot-icon"
-          width="35px"
-          height="35px"
+          width="45px"
+          height="45px"
           className="image-inverted"
         />
       </Link>

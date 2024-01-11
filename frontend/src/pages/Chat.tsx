@@ -218,6 +218,7 @@ const Chat = () => {
           }}
         >
           <input
+            name="prompt"
             placeholder="Enter your prompt here..."
             ref={inputRef}
             onKeyDown={handleEnterKeyPress}

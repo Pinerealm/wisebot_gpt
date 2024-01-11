@@ -63,16 +63,19 @@ const ChatItem = ({
         {!messageBlocks && <Typography fontSize="20px">{content}</Typography>}
         {messageBlocks &&
           messageBlocks.length &&
-          messageBlocks.map((block) =>
+          messageBlocks.map((block, index) =>
             isCodeBlock(block) ? (
               <SyntaxHighlighter
                 style={coldarkCold}
                 language={block.split('\n')[0]}
+                key={index}
               >
                 {block}
               </SyntaxHighlighter>
             ) : (
-              <Typography fontSize="20px">{block}</Typography>
+              <Typography key={index} fontSize="20px">
+                {block}
+              </Typography>
             )
           )}
       </Box>

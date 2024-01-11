@@ -49,7 +49,7 @@ const Home = () => {
           }}
         >
           <img
-            src="chat.png"
+            src="wisebot_snapshot.png"
             alt="chat example"
             style={{
               display: 'flex',

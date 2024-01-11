@@ -184,6 +184,20 @@ const Chat = () => {
             overflowX: 'hidden',
             overflowY: 'auto',
             scrollBehavior: 'smooth',
+            // Design the scroll bar
+            '&::-webkit-scrollbar': {
+              width: '0.5em',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'transparent',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'grey',
+              borderRadius: 10,
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+              backgroundColor: 'darkgrey',
+            },
           }}
         >
           {chatMessages.map((chat, index) => (
@@ -197,7 +211,6 @@ const Chat = () => {
         <div
           style={{
             width: '100%',
-            padding: '20px',
             borderRadius: 8,
             backgroundColor: 'rgb(17,29,39)',
             display: 'flex',
@@ -212,7 +225,7 @@ const Chat = () => {
             style={{
               width: '100%',
               backgroundColor: 'transparent',
-              padding: '10px',
+              padding: '30px',
               border: 'none',
               outline: 'none',
               color: 'white',
@@ -221,7 +234,7 @@ const Chat = () => {
           />
           <IconButton
             onClick={handleSubmit}
-            sx={{ ml: 'auto', color: 'white' }}
+            sx={{ ml: 'auto', color: 'white', mx: 2 }}
           >
             <IoMdSend />
           </IconButton>

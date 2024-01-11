@@ -147,7 +147,7 @@ const Chat = () => {
               },
             }}
           >
-            Clear conversation
+            Delete chats
           </Button>
         </Box>
       </Box>

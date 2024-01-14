@@ -3,6 +3,13 @@ import User from '../models/User.js';
 import { configureOpenAI } from '../config/openai-config.js';
 import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 
+/**
+ * Generates a chat response based on the provided prompt.
+ * @param req - The request object.
+ * @param res - The response object.
+ * @param next - The next function.
+ * @returns A JSON response containing the generated chat completion.
+ */
 export const generateChatCompletion = async (
   req: Request,
   res: Response,
@@ -10,11 +17,13 @@ export const generateChatCompletion = async (
 ) => {
   const { prompt } = req.body;
   try {
+    // This sub-block may need to be extracted to a separate function
     const user = await User.findById(res.locals.jwtData.id);
     if (!user)
-      return res
-        .status(401)
-        .json({ message: 'User not registered OR token expired!' });
+      return res.status(401).json({ message: 'Invalid OR expired token!' });
+    if (user._id.toString() !== res.locals.jwtData.id) {
+      return res.status(401).send('Incorrect token!');
+    }
 
     // Get chat history and append the prompt message
     const chats = user.chats.map(({ role, content }) => ({ role, content }));
@@ -27,6 +36,7 @@ export const generateChatCompletion = async (
       model: 'gpt-3.5-turbo',
       messages: chats as ChatCompletionMessageParam[],
     });
+
     user.chats.push(chatCompletion.choices[0].message);
     await user.save();
     res.status(200).json({ chats: user.chats });
@@ -36,6 +46,14 @@ export const generateChatCompletion = async (
   }
 };
 
+/**
+ * Sends chats to the user.
+ *
+ * @param req - The request object.
+ * @param res - The response object.
+ * @param next - The next function.
+ * @returns A JSON response with the user's chats or an error message.
+ */
 export const sendChatsToUser = async (
   req: Request,
   res: Response,
@@ -43,8 +61,7 @@ export const sendChatsToUser = async (
 ) => {
   try {
     const user = await User.findById(res.locals.jwtData.id);
-    if (!user)
-      return res.status(401).send('User not registered OR token expired!');
+    if (!user) return res.status(401).send('Invalid OR expired token!');
     if (user._id.toString() !== res.locals.jwtData.id) {
       return res.status(401).send('Incorrect token!');
     }
@@ -56,6 +73,14 @@ export const sendChatsToUser = async (
   }
 };
 
+/**
+ * Deletes all chats for the authenticated user.
+ *
+ * @param req - The request object.
+ * @param res - The response object.
+ * @param next - The next function.
+ * @returns A JSON response indicating the success or failure of the operation.
+ */
 export const deleteChats = async (
   req: Request,
   res: Response,
@@ -63,13 +88,12 @@ export const deleteChats = async (
 ) => {
   try {
     const user = await User.findById(res.locals.jwtData.id);
-    if (!user)
-      return res.status(401).send('User not registered OR token expired!');
+    if (!user) return res.status(401).send('Invalid OR expired token!');
     if (user._id.toString() !== res.locals.jwtData.id) {
       return res.status(401).send('Incorrect token!');
     }
 
-    //@ts-ignore
+    // @ts-ignore
     user.chats = [];
     await user.save();
     res.status(200).json({ message: 'OK' });

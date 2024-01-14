@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
-import { randomUUID } from "crypto";
+import mongoose from 'mongoose';
+import { randomUUID } from 'crypto';
 
+// Represent the chat schema for a user.
 const chatSchema = new mongoose.Schema({
   id: {
     type: String,
@@ -16,6 +17,7 @@ const chatSchema = new mongoose.Schema({
   },
 });
 
+// Represents the schema for a user in the database.
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -33,4 +35,4 @@ const userSchema = new mongoose.Schema({
   chats: [chatSchema],
 });
 
-export default mongoose.model("User", userSchema);
+export default mongoose.model('User', userSchema);

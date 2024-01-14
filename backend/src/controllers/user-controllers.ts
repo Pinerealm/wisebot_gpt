@@ -4,6 +4,25 @@ import { compare, hash } from 'bcrypt';
 import { generateToken } from '../utils/tokens-manager.js';
 import { COOKIE_NAME, COOKIE_OPTIONS } from '../utils/constants.js';
 
+/**
+ * Clears the current cookie from the response object.
+ * @param res - The response object.
+ */
+const clearCurrentCookie = (res: Response) => {
+  res.clearCookie(COOKIE_NAME, {
+    path: '/',
+    ...COOKIE_OPTIONS,
+  });
+};
+
+/**
+ * Retrieves all users from the database.
+ *
+ * @param req - The request object.
+ * @param res - The response object.
+ * @param next - The next function.
+ * @returns A JSON response with the list of users or an error message.
+ */
 export const getAllUsers = async (
   req: Request,
   res: Response,
@@ -18,6 +37,14 @@ export const getAllUsers = async (
   }
 };
 
+/**
+ * Handles user signup.
+ *
+ * @param req - The request object.
+ * @param res - The response object.
+ * @param next - The next function.
+ * @returns A JSON response with the user's name and email if login is successful, or an error message if login fails.
+ */
 export const userSignup = async (
   req: Request,
   res: Response,
@@ -35,11 +62,7 @@ export const userSignup = async (
     await user.save();
 
     // Clear cookie before setting it
-    res.clearCookie(COOKIE_NAME, {
-      path: '/',
-      ...COOKIE_OPTIONS,
-    });
-
+    clearCurrentCookie(res);
     const token = generateToken(user._id.toString(), user.email, '14d');
     res.cookie(COOKIE_NAME, token, {
       ...COOKIE_OPTIONS,
@@ -52,6 +75,14 @@ export const userSignup = async (
   }
 };
 
+/**
+ * Handles user login.
+ *
+ * @param req - The request object.
+ * @param res - The response object.
+ * @param next - The next function.
+ * @returns A JSON response with the user's name and email if login is successful, or an error message if login fails.
+ */
 export const userLogin = async (
   req: Request,
   res: Response,
@@ -60,20 +91,16 @@ export const userLogin = async (
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) return res.status(403).json({ message: 'User not registered' });
+    if (!user) return res.status(401).json({ message: 'User not registered' });
 
     const isPasswordCorrect = await compare(password, user.password);
     if (!isPasswordCorrect) {
       console.log('Invalid credentials');
-      return res.status(403).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Clear cookie before setting it
-    res.clearCookie(COOKIE_NAME, {
-      path: '/',
-      ...COOKIE_OPTIONS,
-    });
-
+    clearCurrentCookie(res);
     const token = generateToken(user._id.toString(), user.email, '14d');
     res.cookie(COOKIE_NAME, token, {
       ...COOKIE_OPTIONS,
@@ -87,6 +114,14 @@ export const userLogin = async (
   }
 };
 
+/**
+ * Verify user authentication and retrieve user information.
+ *
+ * @param req - The request object.
+ * @param res - The response object.
+ * @param next - The next function.
+ * @returns A JSON response with user information if authentication is successful, or an error message if authentication fails.
+ */
 export const verifyUser = async (
   req: Request,
   res: Response,
@@ -94,8 +129,7 @@ export const verifyUser = async (
 ) => {
   try {
     const user = await User.findById(res.locals.jwtData.id);
-    if (!user)
-      return res.status(401).send('User not registered OR token expired!');
+    if (!user) return res.status(401).send('Invalid OR expired token!');
     if (user._id.toString() !== res.locals.jwtData.id) {
       return res.status(401).send('Incorrect token!');
     }
@@ -107,6 +141,14 @@ export const verifyUser = async (
   }
 };
 
+/**
+ * Logs out the user by clearing the authentication cookie.
+ *
+ * @param req - The request object.
+ * @param res - The response object.
+ * @param next - The next function.
+ * @returns A JSON response with the user's name and email if successful, or an error message if unsuccessful.
+ */
 export const userLogout = async (
   req: Request,
   res: Response,
@@ -114,17 +156,12 @@ export const userLogout = async (
 ) => {
   try {
     const user = await User.findById(res.locals.jwtData.id);
-    if (!user)
-      return res.status(401).send('User not registered OR token expired!');
+    if (!user) return res.status(401).send('Invalid OR expired token!');
     if (user._id.toString() !== res.locals.jwtData.id) {
       return res.status(401).send('Incorrect token!');
     }
 
-    res.clearCookie(COOKIE_NAME, {
-      path: '/',
-      ...COOKIE_OPTIONS,
-    });
-
+    clearCurrentCookie(res);
     res.status(200).json({ message: 'OK', name: user.name, email: user.email });
   } catch (error) {
     console.log(error);

@@ -1,3 +1,7 @@
+/**
+ * Represents the header component of the application.
+ * It displays the logo and navigation links based on the user's authentication status.
+ */
 import { AppBar, Toolbar } from '@mui/material';
 import Logo from './shared/Logo';
 import { useAuth } from '../context/AuthContext';

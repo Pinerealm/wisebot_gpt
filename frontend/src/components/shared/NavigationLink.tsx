@@ -8,6 +8,11 @@ type Props = {
   onClick?: () => Promise<void>;
 };
 
+/**
+ * Renders a navigation link.
+ * @param props - The component props.
+ * @returns The rendered navigation link.
+ */
 const NavigationLink = (props: Props) => {
   return (
     <Link

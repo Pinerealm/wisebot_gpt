@@ -6,6 +6,11 @@ import { toast } from 'react-hot-toast';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * Signup component for user registration.
+ *
+ * @returns JSX element representing the Signup component.
+ */
 const Signup = () => {
   const navigate = useNavigate();
   const auth = useAuth();

@@ -1,3 +1,6 @@
+/**
+ * Represents the Home page component.
+ */
 import { Box, useMediaQuery, useTheme } from '@mui/material';
 import TypingAnimation from '../components/shared/TypingAnimation';
 import Footer from '../components/shared/Footer';
@@ -5,6 +8,7 @@ import Footer from '../components/shared/Footer';
 const Home = () => {
   const theme = useTheme();
   const isBelowMd = useMediaQuery(theme.breakpoints.down('md'));
+
   return (
     <Box width="100%" height="100%">
       <Box

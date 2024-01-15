@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { coldarkCold } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
+// Breaks the chat response into code blocks and text blocks
 function extractCodeFromString(chatResponse: string) {
   // if (chatResponse.includes('```')) {
   //   const codeRegex = /```(.*?)```/gs;
@@ -20,6 +21,7 @@ function extractCodeFromString(chatResponse: string) {
   }
 }
 
+// Checks if the string is a code block
 function isCodeBlock(str: string) {
   if (
     str.includes('=') ||
@@ -36,6 +38,7 @@ function isCodeBlock(str: string) {
   return false;
 }
 
+// Represents a single chat message
 const ChatItem = ({
   content,
   role,

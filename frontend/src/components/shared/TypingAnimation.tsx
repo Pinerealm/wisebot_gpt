@@ -1,5 +1,10 @@
 import { TypeAnimation } from 'react-type-animation';
 
+/**
+ * Renders a typing animation component.
+ *
+ * @returns The TypingAnimation component.
+ */
 const TypingAnimation = () => {
   return (
     <TypeAnimation

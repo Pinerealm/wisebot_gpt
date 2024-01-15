@@ -1,3 +1,7 @@
+/**
+ * The main component of the application.
+ * Renders the header and routes to different pages based on the URL.
+ */
 import Header from './components/Header';
 import { Routes, Route } from 'react-router-dom';
 

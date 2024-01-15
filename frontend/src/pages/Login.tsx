@@ -6,9 +6,18 @@ import { toast } from 'react-hot-toast';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * Represents the Login page component.
+ * @returns JSX.Element
+ */
 const Login = () => {
   const navigate = useNavigate();
   const auth = useAuth();
+
+  /**
+   * Handles the form submission for login.
+   * @param e - The form event
+   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -29,6 +38,7 @@ const Login = () => {
       navigate('/chat');
     }
   }, [auth]);
+
   return (
     <Box width="100%" height="100%" display="flex" flex={1}>
       <Box padding={8} mt={8} display={{ md: 'flex', sm: 'none', xs: 'none' }}>

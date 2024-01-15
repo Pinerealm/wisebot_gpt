@@ -1,3 +1,8 @@
+/**
+ * Represents the Chat component.
+ * This component allows users to interact with the chat interface.
+ * It displays chat messages, allows users to send messages, and provides options to delete chats.
+ */
 import { Avatar, Box, Button, IconButton, Typography } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { red } from '@mui/material/colors';

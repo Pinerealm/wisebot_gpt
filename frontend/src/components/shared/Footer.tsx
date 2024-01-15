@@ -1,3 +1,8 @@
+/**
+ * Footer component.
+ *
+ * @returns The rendered footer component.
+ */
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -23,7 +28,7 @@ const Footer = () => {
           By
           <span>
             <Link
-              style={{ color: 'inherit' }}
+              style={{ color: 'inherit', fontSize: '25px' }}
               className="nav-link"
               to="https://github.com/Pinerealm/wisebot_gpt"
             >

@@ -1,7 +1,9 @@
-import React from "react";
-
+/**
+ * Renders the NotFound component.
+ * @returns JSX.Element representing the NotFound component.
+ */
 const NotFound = () => {
-  return <div>NotFound</div>;
+  return <div>404 NotFound</div>;
 };
 
 export default NotFound;

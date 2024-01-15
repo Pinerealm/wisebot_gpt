@@ -1,3 +1,7 @@
+/**
+ * Renders the logo component.
+ * @returns The logo component.
+ */
 import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 
@@ -13,10 +17,10 @@ const Logo = () => {
     >
       <Link to={'/'}>
         <img
-          src="robot-icon.png"
+          src="robot_md.svg"
           alt="robot-icon"
-          width="45px"
-          height="45px"
+          width="50px"
+          height="50px"
           className="image-inverted"
         />
       </Link>
@@ -28,7 +32,7 @@ const Logo = () => {
           textShadow: '2px 2px 20px #000',
         }}
       >
-        <span style={{ fontSize: '40px' }}>WiseBOT</span>
+        <span style={{ fontSize: '35px' }}>WiseBOT</span>
       </Typography>
     </div>
   );
